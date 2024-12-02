@@ -151,6 +151,7 @@ uses
   DCFileAttributes,
   FileUtil, uCryptProc,
   uWcxArchiveListOperation,
+  uTempFileSystemFileSource,
   uWcxArchiveCopyInOperation,
   uWcxArchiveCopyOutOperation,
   uWcxArchiveDeleteOperation,
@@ -491,7 +492,11 @@ begin
   Result := [fsoList, fsoCopyOut, fsoTestArchive, fsoExecute, fsoCalcStatistics]; // by default
   with FWcxModule do
   begin
-    if (((FPluginCapabilities and PK_CAPS_NEW) <> 0) or ((FPluginCapabilities and PK_CAPS_MODIFY) <> 0)) and
+    if (((FPluginCapabilities and PK_CAPS_MODIFY) = 0) and mbFileExists(ArchiveFileName)) then
+    begin
+      // not supported
+    end
+    else if (((FPluginCapabilities and PK_CAPS_NEW) <> 0) or ((FPluginCapabilities and PK_CAPS_MODIFY) <> 0)) and
        (Assigned(PackFiles) or Assigned(PackFilesW)) then
       Result:= Result + [fsoCopyIn];
     if ((FPluginCapabilities and PK_CAPS_DELETE) <> 0) and
@@ -589,10 +594,14 @@ function TWcxArchiveFileSource.CreateCopyInOperation(
 var
   TargetFileSource: IFileSource;
 begin
-  TargetFileSource := Self;
-  Result := TWcxArchiveCopyInOperation.Create(SourceFileSource,
-                                              TargetFileSource,
-                                              SourceFiles, TargetPath);
+  if ParentFileSource is ITempFileSystemFileSource then
+    Result := nil
+  else begin
+    TargetFileSource := Self;
+    Result := TWcxArchiveCopyInOperation.Create(SourceFileSource,
+                                                TargetFileSource,
+                                                SourceFiles, TargetPath);
+  end;
 end;
 
 function TWcxArchiveFileSource.CreateCopyOutOperation(
@@ -612,9 +621,13 @@ function TWcxArchiveFileSource.CreateDeleteOperation(var FilesToDelete: TFiles):
 var
   TargetFileSource: IFileSource;
 begin
-  TargetFileSource := Self;
-  Result := TWcxArchiveDeleteOperation.Create(TargetFileSource,
-                                              FilesToDelete);
+  if ParentFileSource is ITempFileSystemFileSource then
+    Result := nil
+  else begin
+    TargetFileSource := Self;
+    Result := TWcxArchiveDeleteOperation.Create(TargetFileSource,
+                                                FilesToDelete);
+  end;
 end;
 
 function TWcxArchiveFileSource.CreateExecuteOperation(var ExecutableFile: TFile;

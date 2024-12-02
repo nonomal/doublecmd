@@ -3233,7 +3233,7 @@ msgid "C&onfiguration"
 msgstr "C&onfigurare"
 
 #: tfrmmain.mnufavoritetabs.caption
-msgid "Favorites"
+msgid "F&avorites"
 msgstr ""
 
 #: tfrmmain.mnufiles.caption
@@ -3251,7 +3251,7 @@ msgstr "&Marchează"
 
 #: tfrmmain.mnunetwork.caption
 msgctxt "TFRMMAIN.MNUNETWORK.CAPTION"
-msgid "Network"
+msgid "&Network"
 msgstr "Rețea"
 
 #: tfrmmain.mnushow.caption
@@ -8631,23 +8631,23 @@ msgstr ""
 msgid "Use &content plugins, combine with:"
 msgstr ""
 
-#: tfrmsearchplugin.headercontrol.sections[0].text
-msgctxt "tfrmsearchplugin.headercontrol.sections[0].text"
+#: tfrmsearchplugin.lblplugin.caption
+msgctxt "tfrmsearchplugin.lblplugin.caption"
 msgid "Plugin"
 msgstr "Modul"
 
-#: tfrmsearchplugin.headercontrol.sections[1].text
-msgctxt "tfrmsearchplugin.headercontrol.sections[1].text"
+#: tfrmsearchplugin.lblfield.caption
+msgctxt "tfrmsearchplugin.lblfield.caption"
 msgid "Field"
 msgstr ""
 
-#: tfrmsearchplugin.headercontrol.sections[2].text
-msgctxt "tfrmsearchplugin.headercontrol.sections[2].text"
+#: tfrmsearchplugin.lbloperator.caption
+msgctxt "tfrmsearchplugin.lbloperator.caption"
 msgid "Operator"
 msgstr ""
 
-#: tfrmsearchplugin.headercontrol.sections[3].text
-msgctxt "tfrmsearchplugin.headercontrol.sections[3].text"
+#: tfrmsearchplugin.lblvalue.caption
+msgctxt "tfrmsearchplugin.lblvalue.caption"
 msgid "Value"
 msgstr "Valoare"
 
@@ -11136,6 +11136,10 @@ msgstr ""
 #: ulng.rsmenumacoseditfindertags
 msgctxt "ulng.rsmenumacoseditfindertags"
 msgid "Edit Finder Tags..."
+msgstr ""
+
+#: ulng.rsmenumacosgrantpermissiontosupportfindertags
+msgid "Grant \"Full Disk Access\" permission to support Finder Tags..."
 msgstr ""
 
 #: ulng.rsmenumacosremovefindertag

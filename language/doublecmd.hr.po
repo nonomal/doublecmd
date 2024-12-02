@@ -3404,8 +3404,7 @@ msgid "C&onfiguration"
 msgstr "&Postavke"
 
 #: tfrmmain.mnufavoritetabs.caption
-msgctxt "TFRMMAIN.MNUCONTEXTLINE2.CAPTION"
-msgid "Favorites"
+msgid "F&avorites"
 msgstr "Omiljeno"
 
 #: tfrmmain.mnufiles.caption
@@ -3424,7 +3423,7 @@ msgstr "Oznaka&"
 
 #: tfrmmain.mnunetwork.caption
 msgctxt "TFRMMAIN.MNUNETWORK.CAPTION"
-msgid "Network"
+msgid "&Network"
 msgstr "Mreža"
 
 #: tfrmmain.mnushow.caption
@@ -8965,23 +8964,23 @@ msgstr "M&anje pravila"
 msgid "Use &content plugins, combine with:"
 msgstr "Upotrebi &sadržajne dodatke u kombinaciji s"
 
-#: tfrmsearchplugin.headercontrol.sections[0].text
-msgctxt "tfrmsearchplugin.headercontrol.sections[0].text"
+#: tfrmsearchplugin.lblplugin.caption
+msgctxt "tfrmsearchplugin.lblplugin.caption"
 msgid "Plugin"
 msgstr "Priključak"
 
-#: tfrmsearchplugin.headercontrol.sections[1].text
-msgctxt "tfrmsearchplugin.headercontrol.sections[1].text"
+#: tfrmsearchplugin.lblfield.caption
+msgctxt "tfrmsearchplugin.lblfield.caption"
 msgid "Field"
 msgstr ""
 
-#: tfrmsearchplugin.headercontrol.sections[2].text
-msgctxt "tfrmsearchplugin.headercontrol.sections[2].text"
+#: tfrmsearchplugin.lbloperator.caption
+msgctxt "tfrmsearchplugin.lbloperator.caption"
 msgid "Operator"
 msgstr ""
 
-#: tfrmsearchplugin.headercontrol.sections[3].text
-msgctxt "tfrmsearchplugin.headercontrol.sections[3].text"
+#: tfrmsearchplugin.lblvalue.caption
+msgctxt "tfrmsearchplugin.lblvalue.caption"
 msgid "Value"
 msgstr "Vrijednost"
 
@@ -11514,6 +11513,10 @@ msgstr ""
 #: ulng.rsmenumacoseditfindertags
 msgctxt "ulng.rsmenumacoseditfindertags"
 msgid "Edit Finder Tags..."
+msgstr ""
+
+#: ulng.rsmenumacosgrantpermissiontosupportfindertags
+msgid "Grant \"Full Disk Access\" permission to support Finder Tags..."
 msgstr ""
 
 #: ulng.rsmenumacosremovefindertag

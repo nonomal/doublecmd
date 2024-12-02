@@ -81,6 +81,7 @@ type
     FSkipRenameError: Boolean;
     FSkipOpenForReadingError: Boolean;
     FSkipOpenForWritingError: Boolean;
+    FSkipCreateSymLinkError: Boolean;
     FSkipReadError: Boolean;
     FSkipWriteError: Boolean;
     FSkipCopyError: Boolean;
@@ -634,9 +635,8 @@ begin
   Result := False;
 
   { Check disk free space }
-  if FCheckFreeSpace = True then
+  if FCheckFreeSpace and GetDiskFreeSpace(ExtractFilePath(TargetFileName), iFreeDiskSize, iTotalDiskSize) then
   begin
-    GetDiskFreeSpace(ExtractFilePath(TargetFileName), iFreeDiskSize, iTotalDiskSize);
     if SourceFile.Size > iFreeDiskSize then
     begin
       if FSkipAllBigFiles = True then
@@ -831,8 +831,7 @@ begin
                 on E: EWriteError do
                   begin
                     { Check disk free space }
-                    GetDiskFreeSpace(ExtractFilePath(TargetFileName), iFreeDiskSize, iTotalDiskSize);
-                    if BytesRead > iFreeDiskSize then
+                    if GetDiskFreeSpace(ExtractFilePath(TargetFileName), iFreeDiskSize, iTotalDiskSize) and (BytesRead > iFreeDiskSize) then
                       begin
                         case AskQuestion(rsMsgNoFreeSpaceRetry, '',
                                          [fsourYes, fsourNo, fsourSkip],
@@ -1355,7 +1354,20 @@ begin
             end
             else
             begin
-              ShowError(rsMsgLogError + Format(rsMsgLogSymLink, [AbsoluteTargetFileName]));
+              if not FSkipCreateSymLinkError then
+              begin
+                case AskQuestion(rsSymErrCreate.TrimRight(['.']) + ' ' +
+                                 WrapTextSimple(AbsoluteTargetFileName, 64) +
+                                 LineEnding + LineEnding + mbSysErrorMessage, '',
+                                 [fsourSkip, fsourSkipAll, fsourAbort],
+                                 fsourSkip, fsourAbort) of
+                  fsourAbort:
+                    AbortOperation;
+                  fsourSkip: ; // Do nothing
+                  fsourSkipAll:
+                    FSkipCreateSymLinkError := True;
+                end;
+              end;
               Result := False;
             end;
           end
@@ -1372,6 +1384,16 @@ begin
 
     else
       raise Exception.Create('Invalid TargetExists result');
+  end;
+
+  if Result = True then
+  begin
+    LogMessage(Format(rsMsgLogSuccess + rsMsgLogSymLink, [aNode.TheFile.FullPath + ' -> ' + AbsoluteTargetFileName]),
+               [log_cp_mv_ln], lmtSuccess);
+  end
+  else begin
+    LogMessage(Format(rsMsgLogError + rsMsgLogSymLink, [aNode.TheFile.FullPath + ' -> ' + AbsoluteTargetFileName]),
+               [log_cp_mv_ln], lmtError);
   end;
 
   Inc(FStatistics.DoneFiles);
