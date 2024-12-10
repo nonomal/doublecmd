@@ -12,9 +12,6 @@ uses
   MacOSAll, CocoaAll, CocoaConst, CocoaTextEdits, CocoaUtils, Cocoa_Extra;
 
 const
-  FINDER_FAVORITE_TAGS_MENU_ITEM_CAPTION = #$EF#$BF#$BC'FinderFavoriteTags';
-
-const
   FINDER_FAVORITE_TAGS_MENU_ITEM_SIZE = 20.0;
   FINDER_FAVORITE_TAGS_MENU_ITEM_SPACING = 4.0;
 
@@ -51,10 +48,9 @@ type
       const title: String; onClose: TFinderEditorCloseHandler;
       const positioningView: NSView; const edge: NSRectEdge );
 
-    class procedure attachFinderTagsMenu( const path: String; const lclMenu: TPopupMenu );
-    class procedure attachSearchForTagsMenu( const lclMenu: TMenuItem );
-    class procedure drawTagsAsDecoration(
-      const tagNames: NSArray; const drawRect: TRect; const focused: Boolean );
+    class function attachFinderTagsMenu( const path: String;
+      const lclMenu: TPopupMenu; const menuIndex: Integer ): Boolean;
+    class procedure attachSearchForTagsMenu( const lclMenu: TMenu );
   private
     class procedure drawTagName( const tagName: NSString;
       const fontSize: CGFloat; const color: NSColor; const rect: NSRect );
@@ -891,15 +887,17 @@ begin
   panel.showPopover( positioningView, edge );
 end;
 
-class procedure uDarwinFinderUtil.attachFinderTagsMenu( const path: String;
-  const lclMenu: TPopupMenu );
+class function uDarwinFinderUtil.attachFinderTagsMenu( const path: String;
+  const lclMenu: TPopupMenu; const menuIndex: Integer ): Boolean;
 var
-  menuIndex: Integer;
   menuView: TFinderFavoriteTagsMenuView;
   cocoaItem: NSMenuItem;
+  favoriteTags: NSArray;
 begin
-  menuIndex:= lclMenu.Items.IndexOfCaption( FINDER_FAVORITE_TAGS_MENU_ITEM_CAPTION );
-  if menuIndex < 0 then
+  Result:= False;
+
+  favoriteTags:= uDarwinFinderModelUtil.favoriteTags;
+  if favoriteTags = nil then
     Exit;
 
   menuView:= TFinderFavoriteTagsMenuView.alloc.initWithFrame(
@@ -908,15 +906,16 @@ begin
       FINDER_FAVORITE_TAGS_MENU_ITEM_SIZE + FINDER_FAVORITE_TAGS_MENU_ITEM_SPACING*2 ) );
   menuView.setLclMenu( lclMenu, lclMenu.Items[menuIndex+1] );
   menuView.setPath( StrToNSString(path) );
-  menuView.setFavoriteTags( uDarwinFinderModelUtil.favoriteTags );
+  menuView.setFavoriteTags( favoriteTags );
 
   cocoaItem:= NSMenuItem( lclMenu.Items[menuIndex].Handle );
   cocoaItem.setView( menuView );
 
   menuView.release;
+  Result:= True;
 end;
 
-class procedure uDarwinFinderUtil.attachSearchForTagsMenu(const lclMenu: TMenuItem);
+class procedure uDarwinFinderUtil.attachSearchForTagsMenu(const lclMenu: TMenu);
   procedure setColorImage( const lclMenuItem: TMenuItem );
   var
     cocoaItem: NSMenuItem;
@@ -933,44 +932,9 @@ var
   i: Integer;
   count: Integer;
 begin
-  count:= lclMenu.Count;
+  count:= lclMenu.Items.Count;
   for i:=0 to count-1 do begin
-    setColorImage( lclMenu[i] );
-  end;
-end;
-
-class procedure uDarwinFinderUtil.drawTagsAsDecoration(
-  const tagNames: NSArray; const drawRect: TRect; const focused: Boolean );
-var
-  tagName: NSString;
-  tag: TFinderTag;
-  length: NSUInteger;
-  i: NSUInteger;
-  tagRect: NSRect;
-  path: NSBezierPath;
-begin
-  tagRect.size.width:= 11;
-  tagRect.size.height:= 11;
-  tagRect.origin.x:= drawRect.Right - 17;
-  tagRect.origin.y:= drawRect.Top + (drawRect.Height-tagRect.size.height)/2;
-
-  length:= tagNames.count;
-  i:= 0;
-  if length > 3 then
-    i:= length - 3;
-  while i < length do begin
-    tagName:= NSString( tagNames.objectAtIndex(i) );
-    tag:= TFinderTags.getTagOfName( tagName );
-    tag.color.set_;
-    path:= NSBezierPath.bezierPathWithOvalInRect( tagRect );
-    path.fill;
-    if focused then
-      NSColor.alternateSelectedControlTextColor.set_
-    else
-      NSColor.textBackgroundColor.set_;
-    path.stroke;
-    tagRect.origin.x:= tagRect.origin.x - 5;
-    inc( i );
+    setColorImage( lclMenu.Items[i] );
   end;
 end;
 

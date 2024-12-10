@@ -115,6 +115,7 @@ type
     pmInsertButtonMenu: TPopupMenu;
     rbSeparator: TRadioButton;
     rbSpace: TRadioButton;
+    rbLineBreak: TRadioButton;
     ReplaceDialog: TReplaceDialog;
     rgToolItemType: TRadioGroup;
     btnOpenIcon: TSpeedButton;
@@ -417,10 +418,11 @@ begin
       if ToolItem is TKASSeparatorItem then
       begin
         ButtonTypeIndex := 0;
-        if TKASSeparatorItem(ToolItem).Style then
-          rbSpace.Checked := True
-        else
-          rbSeparator.Checked := True;
+        case TKASSeparatorItem(ToolItem).Style of
+          kssDivider: rbSpace.Checked := True;
+          kssLineBreak: rbLineBreak.Checked := True;
+          kssSeparator:  rbSeparator.Checked := True;
+        end;
       end;
       if ToolItem is TKASNormalItem then
       begin
@@ -527,8 +529,9 @@ begin
   rgToolItemType.Visible := Assigned(FCurrentButton);
 
   lblStyle.Visible := not (EnableNormal or EnableCommand or EnableProgram);
-  rbSeparator.Visible := lblStyle.Visible;
   rbSpace.Visible := lblStyle.Visible;
+  rbSeparator.Visible := lblStyle.Visible;
+  rbLineBreak.Visible := lblStyle.Visible;
 end;
 
 class function TfrmOptionsToolbarBase.GetNode: String;
@@ -646,7 +649,12 @@ begin
     ToolItem := FCurrentButton.ToolItem;
     if ToolItem is TKASSeparatorItem then
     begin
-      TKASSeparatorItem(ToolItem).Style:= rbSpace.Checked;
+      if rbSpace.Checked then
+        TKASSeparatorItem(ToolItem).Style:= kssDivider
+      else if rbSeparator.Checked then
+        TKASSeparatorItem(ToolItem).Style:= kssSeparator
+      else
+        TKASSeparatorItem(ToolItem).Style:= kssLineBreak;
     end;
     if ToolItem is TKASNormalItem then
     begin
@@ -790,7 +798,7 @@ var
 
   function ReplaceIfNecessary(sWorkingText:string):string;
   begin
-    result := StringReplace(sWorkingText, sSearchText, sReplaceText, ReplaceFlags);
+    result := UTF8StringReplace(sWorkingText, sSearchText, sReplaceText, ReplaceFlags);
     if result<>sWorkingText then inc(NbOfReplacement);
   end;
 
@@ -832,6 +840,7 @@ var
   Toolbar: TKASToolbar;
   EditSearchOptionToOffer: TEditSearchDialogOption = [];
   EditSearchOptionReturned: TEditSearchDialogOption = [];
+  CaseSensitive: array[Boolean] of TEditSearchDialogOption = ([eswoCaseSensitiveUnchecked], [eswoCaseSensitiveChecked]);
 begin
   with Sender as TComponent do ActionDispatcher:=tag;
 
@@ -846,11 +855,7 @@ begin
             sSearchText:='';
   sReplaceText:=sSearchText;
 
-  {$IFDEF MSWINDOWS}
-  EditSearchOptionToOffer:=EditSearchOptionToOffer+[eswoCaseSensitiveUnchecked];
-  {$ELSE}
-  EditSearchOptionToOffer:=EditSearchOptionToOffer+[eswoCaseSensitiveChecked];
-  {$ENDIF}
+  EditSearchOptionToOffer:= CaseSensitive[FileNameCaseSensitive];
 
   if GetSimpleSearchAndReplaceString(self, EditSearchOptionToOffer, sSearchText, sReplaceText, EditSearchOptionReturned, glsSearchPathHistory, glsReplacePathHistory) then
   begin
